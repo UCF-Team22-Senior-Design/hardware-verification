@@ -143,6 +143,19 @@ void driveLaser()
 #define PIN_PHOTOTRANSISTOR 18
 #endif
 
+// PWM Settings
+#define PWM_FREQUENCY 20000
+#define PWM_CYCLE     255
+#define PWM_RESOLUTION  8
+
+#ifdef CONTROLLER
+#define PIN_PWM_3V3 33
+#else
+#define PIN_PWM_3V3 12
+#define PIN_PWM_5V  33
+#define PIN_PWM_12V 27
+#endif
+
 void statusReport()
 {
   // Print out information about the current state of inputs/things to serial
@@ -177,6 +190,14 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.printf("\nHardware Verification Begun. Platform: %s\n", PLATFORM_LABEL);
+
+  // PWM Configuration
+  ledcSetup(0, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_PWM_3V3, 0);
+#ifndef CONTROLLER
+  ledcAttachPin(PIN_PWM_5V, 0);
+  ledcAttachPin(PIN_PWM_12V, 0);
+#endif
 
   Serial.printf("Initializing wireless mesh...\n");
   mesh.setDebugMsgTypes(ERROR | STARTUP);
